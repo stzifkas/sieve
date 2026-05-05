@@ -2,9 +2,6 @@
 
 ## Transparent feedback compression middleware for LLM coding agents
 
-**Version:** 0.1.0-draft
-**Date:** April 2026
-
 ---
 
 ## 1. Problem Statement
@@ -612,33 +609,7 @@ class CompressConfig:
 
 ---
 
-## 5. Parser Implementation Priority
-
-Ordered by estimated impact (frequency × verbosity × ease of parsing):
-
-| Priority | Parser | Est. token savings | Complexity | Coverage |
-|----------|--------|-------------------|------------|----------|
-| P0 | pytest | Very high | Low | Python projects (~60% of SWE-bench) |
-| P0 | Python traceback | Very high | Low | Any Python runtime error |
-| P0 | Generic fallback | High | Low | Everything else |
-| P1 | gcc/clang | High | Medium | C/C++ projects |
-| P1 | tsc/eslint | High | Medium | TypeScript/JS projects |
-| P1 | pip/npm install | High | Low | Package install noise |
-| P1 | jest/mocha | High | Medium | JS test output |
-| P2 | rustc | Medium | Medium | Rust projects |
-| P2 | mypy/pylint | Medium | Low | Python static analysis |
-| P2 | go test/go vet | Medium | Medium | Go projects |
-| P2 | find/grep/rg | Medium | Low | File discovery |
-| P3 | cargo build | Medium | Medium | Rust build |
-| P3 | gradle/maven | Medium | High | Java/Kotlin build |
-| P3 | docker build | Medium | High | Container builds |
-| P3 | make | Low | High | Very variable output |
-
-**MVP scope (P0 only):** pytest + Python traceback + generic fallback. This covers the majority of SWE-bench tasks and demonstrates the concept with 3 parsers.
-
----
-
-## 6. Data Model
+## 5. Data Model
 
 ```python
 # --- Core output items ---
@@ -707,7 +678,7 @@ class TokenStats:
 
 ---
 
-## 7. Testing Strategy
+## 6. Testing Strategy
 
 ### 7.1 Parser unit tests
 
@@ -745,7 +716,7 @@ A standardized benchmark of 500 real tool outputs (100 per category: test, compi
 
 ---
 
-## 8. File Structure
+## 7. File Structure
 
 ```
 agent-compress/
@@ -802,22 +773,7 @@ agent-compress/
 
 ---
 
-## 9. MVP Milestones
-
-| Week | Deliverable |
-|------|-------------|
-| 1 | Core data model, session state, generic fallback parser, basic API |
-| 2 | pytest parser + Python traceback parser with delta engine |
-| 3 | Integration wrappers (direct, decorator, MCP proxy) |
-| 4 | Benchmark corpus collection, compression ratio measurements |
-| 5 | gcc/tsc/eslint parsers, pip/npm parsers |
-| 6 | SWE-bench replay evaluation (token savings + accuracy preservation) |
-
-**Week 4 checkpoint:** If pytest + traceback + generic fallback shows <40% compression on real SWE-bench trajectories, reassess approach before continuing.
-
----
-
-## 10. Success Metrics
+## 8. Success Metrics
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
