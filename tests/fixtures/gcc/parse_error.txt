@@ -1,0 +1,25 @@
+src/parser.c: In function 'parse_expression':
+src/parser.c:147:23: error: incompatible types when assigning to type 'struct Node *' from type 'int'
+  147 |     node->left = parse_term();
+      |                       ^~~~~~~~~~~~
+src/parser.c:147:23: note: expected 'struct Node *' but argument is of type 'int'
+In file included from src/parser.c:3:
+include/ast.h:24:5: note: 'struct Node' declared here
+   24 |     struct Node *left;
+      |     ^~~~~~~~~~~
+src/parser.c:12:1: warning: implicit declaration of function 'parse_term' [-Wimplicit-function-declaration]
+   12 | int result = parse_term();
+      | ^~~
+src/parser.c:212:9: error: 'undeclared_var' undeclared (first use in this function)
+  212 |         undeclared_var = 5;
+      |         ^~~~~~~~~~~~~~~
+src/parser.c:212:9: note: each undeclared identifier is reported only once for each function it appears in
+src/parser.c:298:15: error: passing argument 1 of 'free' makes pointer from integer without a cast [-Wint-conversion]
+  298 |         free(value);
+      |              ^~~~~
+      |              |
+      |              int
+In file included from /usr/include/stdlib.h:567:
+/usr/include/bits/stdlib.h:11:24: note: expected 'void *' but argument is of type 'int'
+   11 | extern void free (void *__ptr) __THROW;
+      |                   ~~~~~~^~~~~

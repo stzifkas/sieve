@@ -1,0 +1,8 @@
+src/sieve/api.py:23: error: Argument 1 to "compress" of "CompressSession" has incompatible type "int"; expected "str"  [arg-type]
+src/sieve/api.py:23: note: Did you mean to convert with str()?
+src/sieve/api.py:45: error: Incompatible return value type (got "None", expected "CompressionResult")  [return-value]
+src/sieve/parsers/pytest_.py:88: error: Item "None" of "str | None" has no attribute "lower"  [union-attr]
+src/sieve/parsers/pytest_.py:88: note: Consider asserting the value is not None first
+src/sieve/router.py:12: warning: Unused "type: ignore" comment  [unused-ignore]
+src/sieve/delta.py:67:5: error: Need type annotation for "x"  [var-annotated]
+Found 4 errors in 4 files (checked 14 source files)

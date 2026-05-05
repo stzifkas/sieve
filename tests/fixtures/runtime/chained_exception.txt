@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/workspace/app.py", line 4, in load_config
+    int("abc")
+ValueError: invalid literal for int() with base 10: 'abc'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/app.py", line 12, in <module>
+    main()
+  File "/workspace/app.py", line 9, in main
+    raise RuntimeError("config bootstrap failed") from exc
+RuntimeError: config bootstrap failed

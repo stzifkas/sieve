@@ -1,0 +1,17 @@
+
+/workspace/src/components/Button.jsx
+   3:1   error    'React' must be in scope when using JSX           react/react-in-jsx-scope
+  12:5   error    Missing semicolon                                  semi
+  14:9   warning  'unused' is defined but never used                 no-unused-vars
+  21:3   error    Expected '===' and instead saw '=='                eqeqeq
+
+/workspace/src/api/client.js
+   5:1   error    'fetch' is not defined                             no-undef
+  18:14  warning  Unexpected console statement                       no-console
+
+/workspace/src/utils/index.js
+   2:8   error    Strings must use singlequote                       quotes
+  10:1   error    Expected indentation of 2 spaces but found 4       indent
+
+✖ 8 problems (6 errors, 2 warnings)
+  4 errors and 0 warnings potentially fixable with the `--fix` option.

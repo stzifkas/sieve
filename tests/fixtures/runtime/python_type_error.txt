@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/app.py", line 21, in <module>
+    raise SystemExit(main())
+  File "/workspace/app.py", line 17, in main
+    return update_user(None)
+  File "api/views.py", line 67, in update_user
+    return user.email
+TypeError: 'NoneType' object has no attribute 'email'

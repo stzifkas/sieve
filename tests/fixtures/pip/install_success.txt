@@ -1,0 +1,114 @@
+Collecting django>=4.2
+  Downloading Django-4.2.7-py3-none-any.whl.metadata (4.1 kB)
+Collecting djangorestframework>=3.14
+  Downloading djangorestframework-3.14.0-py3-none-any.whl.metadata (10 kB)
+Collecting psycopg2-binary>=2.9
+  Downloading psycopg2_binary-2.9.9-cp312-cp312-manylinux_2_17_x86_64.whl.metadata (4.4 kB)
+Collecting celery>=5.3
+  Downloading celery-5.3.6-py3-none-any.whl.metadata (21 kB)
+Collecting redis>=5.0
+  Downloading redis-5.0.1-py3-none-any.whl.metadata (8.9 kB)
+Collecting requests>=2.31
+  Downloading requests-2.31.0-py3-none-any.whl.metadata (4.6 kB)
+Collecting boto3>=1.34
+  Downloading boto3-1.34.14-py3-none-any.whl.metadata (6.6 kB)
+Collecting pillow>=10.1
+  Downloading pillow-10.2.0-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (9.7 kB)
+Collecting sqlparse>=0.4 (from django>=4.2)
+  Downloading sqlparse-0.4.4-py3-none-any.whl.metadata (4.0 kB)
+Collecting asgiref>=3.6 (from django>=4.2)
+  Downloading asgiref-3.7.2-py3-none-any.whl.metadata (9.2 kB)
+Collecting pytz>=2022 (from django>=4.2)
+  Downloading pytz-2023.3.post1-py2.py3-none-any.whl.metadata (22 kB)
+Collecting click<9.0,>=8.1.2 (from celery>=5.3)
+  Downloading click-8.1.7-py3-none-any.whl.metadata (3.0 kB)
+Collecting click-didyoumean>=0.3.0 (from celery>=5.3)
+  Downloading click_didyoumean-0.3.0-py3-none-any.whl.metadata (4.0 kB)
+Collecting click-repl>=0.2.0 (from celery>=5.3)
+  Downloading click_repl-0.3.0-py3-none-any.whl.metadata (5.6 kB)
+Collecting click-plugins>=1.1.1 (from celery>=5.3)
+  Downloading click_plugins-1.1.1-py2.py3-none-any.whl.metadata (6.4 kB)
+Collecting kombu<6.0,>=5.3.4 (from celery>=5.3)
+  Downloading kombu-5.3.5-py3-none-any.whl.metadata (3.2 kB)
+Collecting vine<6.0,>=5.0.0 (from celery>=5.3)
+  Downloading vine-5.1.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting amqp<6.0.0,>=5.1.1 (from kombu<6.0,>=5.3.4->celery>=5.3)
+  Downloading amqp-5.2.0-py3-none-any.whl.metadata (8.9 kB)
+Collecting billiard<5.0,>=4.2.0 (from celery>=5.3)
+  Downloading billiard-4.2.0-py3-none-any.whl.metadata (4.4 kB)
+Collecting urllib3<3,>=1.21.1 (from requests>=2.31)
+  Downloading urllib3-2.1.0-py3-none-any.whl.metadata (6.4 kB)
+Collecting charset-normalizer<4,>=2 (from requests>=2.31)
+  Downloading charset_normalizer-3.3.2-cp312-cp312-manylinux_2_17_x86_64.whl.metadata (33 kB)
+Collecting idna<4,>=2.5 (from requests>=2.31)
+  Downloading idna-3.6-py3-none-any.whl.metadata (9.9 kB)
+Collecting certifi>=2017.4.17 (from requests>=2.31)
+  Downloading certifi-2024.2.2-py3-none-any.whl.metadata (2.2 kB)
+Collecting botocore<1.35.0,>=1.34.14 (from boto3>=1.34)
+  Downloading botocore-1.34.14-py3-none-any.whl.metadata (5.7 kB)
+Collecting jmespath<2.0.0,>=0.7.1 (from boto3>=1.34)
+  Downloading jmespath-1.0.1-py3-none-any.whl.metadata (7.6 kB)
+Collecting s3transfer<0.11.0,>=0.10.0 (from boto3>=1.34)
+  Downloading s3transfer-0.10.0-py3-none-any.whl.metadata (1.7 kB)
+Collecting python-dateutil<3.0.0,>=2.1 (from botocore<1.35.0,>=1.34.14->boto3>=1.34)
+  Downloading python_dateutil-2.8.2-py2.py3-none-any.whl.metadata (8.2 kB)
+Collecting six>=1.5 (from python-dateutil<3.0.0,>=2.1->botocore<1.35.0,>=1.34.14->boto3>=1.34)
+  Downloading six-1.16.0-py2.py3-none-any.whl.metadata (1.8 kB)
+Collecting prompt-toolkit>=3.0.36 (from click-repl>=0.2.0->celery>=5.3)
+  Downloading prompt_toolkit-3.0.43-py3-none-any.whl.metadata (6.8 kB)
+Collecting wcwidth (from prompt-toolkit>=3.0.36->click-repl>=0.2.0->celery>=5.3)
+  Downloading wcwidth-0.2.13-py2.py3-none-any.whl.metadata (14 kB)
+Downloading Django-4.2.7-py3-none-any.whl (8.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.0/8.0 MB 47.9 MB/s eta 0:00:00
+Downloading djangorestframework-3.14.0-py3-none-any.whl (1.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 73.7 MB/s eta 0:00:00
+Downloading psycopg2_binary-2.9.9-cp312-cp312-manylinux_2_17_x86_64.whl (3.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 88.4 MB/s eta 0:00:00
+Downloading celery-5.3.6-py3-none-any.whl (422 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 422.7/422.7 kB 49.0 MB/s eta 0:00:00
+Downloading redis-5.0.1-py3-none-any.whl (250 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 250.3/250.3 kB 35.2 MB/s eta 0:00:00
+Downloading requests-2.31.0-py3-none-any.whl (62 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.6/62.6 kB 31.8 MB/s eta 0:00:00
+Downloading boto3-1.34.14-py3-none-any.whl (139 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 139.3/139.3 kB 28.7 MB/s eta 0:00:00
+Downloading pillow-10.2.0-cp312-cp312-manylinux_2_28_x86_64.whl (4.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 79.4 MB/s eta 0:00:00
+Downloading sqlparse-0.4.4-py3-none-any.whl (41 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 41.6/41.6 kB 12.4 MB/s eta 0:00:00
+Downloading asgiref-3.7.2-py3-none-any.whl (24 kB)
+Downloading pytz-2023.3.post1-py2.py3-none-any.whl (502 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 502.5/502.5 kB 51.7 MB/s eta 0:00:00
+Downloading click-8.1.7-py3-none-any.whl (97 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 97.9/97.9 kB 22.1 MB/s eta 0:00:00
+Downloading click_didyoumean-0.3.0-py3-none-any.whl (2.7 kB)
+Downloading click_repl-0.3.0-py3-none-any.whl (10 kB)
+Downloading click_plugins-1.1.1-py2.py3-none-any.whl (7.5 kB)
+Downloading kombu-5.3.5-py3-none-any.whl (200 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 200.9/200.9 kB 30.3 MB/s eta 0:00:00
+Downloading vine-5.1.0-py3-none-any.whl (9.6 kB)
+Downloading amqp-5.2.0-py3-none-any.whl (50 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 50.9/50.9 kB 13.7 MB/s eta 0:00:00
+Downloading billiard-4.2.0-py3-none-any.whl (86 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 86.8/86.8 kB 19.7 MB/s eta 0:00:00
+Downloading urllib3-2.1.0-py3-none-any.whl (104 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 104.6/104.6 kB 21.5 MB/s eta 0:00:00
+Downloading charset_normalizer-3.3.2-cp312-cp312-manylinux_2_17_x86_64.whl (142 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 142.1/142.1 kB 27.6 MB/s eta 0:00:00
+Downloading idna-3.6-py3-none-any.whl (61 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 61.6/61.6 kB 14.2 MB/s eta 0:00:00
+Downloading certifi-2024.2.2-py3-none-any.whl (163 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 163.8/163.8 kB 28.1 MB/s eta 0:00:00
+Downloading botocore-1.34.14-py3-none-any.whl (12.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.0/12.0 MB 73.2 MB/s eta 0:00:00
+Downloading jmespath-1.0.1-py3-none-any.whl (20 kB)
+Downloading s3transfer-0.10.0-py3-none-any.whl (82 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 82.1/82.1 kB 18.4 MB/s eta 0:00:00
+Downloading python_dateutil-2.8.2-py2.py3-none-any.whl (247 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 247.7/247.7 kB 35.2 MB/s eta 0:00:00
+Downloading six-1.16.0-py2.py3-none-any.whl (11 kB)
+Downloading prompt_toolkit-3.0.43-py3-none-any.whl (386 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 386.1/386.1 kB 41.7 MB/s eta 0:00:00
+Downloading wcwidth-0.2.13-py2.py3-none-any.whl (34 kB)
+Installing collected packages: pytz, wcwidth, vine, urllib3, six, sqlparse, redis, prompt-toolkit, pillow, jmespath, idna, click, charset-normalizer, certifi, billiard, asgiref, amqp, requests, python-dateutil, kombu, django, click-plugins, click-didyoumean, click-repl, psycopg2-binary, djangorestframework, botocore, s3transfer, celery, boto3
+Successfully installed amqp-5.2.0 asgiref-3.7.2 billiard-4.2.0 boto3-1.34.14 botocore-1.34.14 celery-5.3.6 certifi-2024.2.2 charset-normalizer-3.3.2 click-8.1.7 click-didyoumean-0.3.0 click-plugins-1.1.1 click-repl-0.3.0 django-4.2.7 djangorestframework-3.14.0 idna-3.6 jmespath-1.0.1 kombu-5.3.5 pillow-10.2.0 prompt-toolkit-3.0.43 psycopg2-binary-2.9.9 python-dateutil-2.8.2 pytz-2023.3.post1 redis-5.0.1 requests-2.31.0 s3transfer-0.10.0 six-1.16.0 sqlparse-0.4.4 urllib3-2.1.0 vine-5.1.0 wcwidth-0.2.13

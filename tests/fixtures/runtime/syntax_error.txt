@@ -1,0 +1,4 @@
+  File "/workspace/bad.py", line 3
+    def broken(:
+               ^
+SyntaxError: invalid syntax

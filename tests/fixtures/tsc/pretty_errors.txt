@@ -1,0 +1,30 @@
+src/components/Form.tsx:12:5 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+
+12     submit(value);
+       ~~~~~
+
+  src/components/Form.tsx:8
+    8   function submit(n: number): void;
+                       ~
+    The expected type comes from the parameter 'n'.
+
+src/components/Form.tsx:34:9 - error TS2322: Type 'undefined' is not assignable to type 'string'.
+
+34         id: maybeId,
+           ~~
+
+src/api/client.ts:67:14 - error TS2769: No overload matches this call.
+
+67     return fetch(url, options);
+                ~~~~~
+
+  Overload 1 of 2, '(input: RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Argument of type 'unknown' is not assignable to parameter of type 'RequestInfo'.
+
+src/utils/format.ts:5:1 - warning TS6133: 'helper' is declared but its value is never read.
+
+5 import { helper } from './helper';
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Found 3 errors in 2 files.
