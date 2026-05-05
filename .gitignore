@@ -1,0 +1,17 @@
+.venv/
+.venv_swe/
+env/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.sieve/
+.swe-workspaces/
+**/node_modules/
+artifacts/
+logs/
+.codex
+.claude/settings.local.json
+# SWE-bench harness drops summary JSONs in cwd
+/cursor-*.json
+/codex-*.json
