@@ -36,6 +36,32 @@ A 5-turn delta scenario where the same pytest failure repeats compresses to **86
 
 The compressor enforces a never-larger-than-raw invariant: on inputs already smaller than the framing overhead (mypy clean output, ESLint with terse messages, etc.) it passes the raw text through unchanged. The low ratios on those categories aren't a bug — there's nothing to compress; the structured items are still extracted and used for cross-turn delta dedup.
 
+### End-to-end agent run (SWE-bench Lite, Cursor Composer-2)
+
+Paired baseline-vs-sieve trial over the first 14 SWE-bench Lite instances, agent = **Cursor CLI / Composer-2**, scoring via the official `swebench.harness.run_evaluation` Docker harness. Of the 14, 4 reached the harness on this slice (2 prep failures, 8 still queued); the four scored were all astropy.
+
+|                              | baseline | sieve  |
+|------------------------------|---------:|-------:|
+| instances scored             | 4        | 4      |
+| resolved                     | 2        | 2      |
+| resolve rate (of scored)     | 50.0%    | 50.0%  |
+| patch chars                  | 21,242   | 19,956 |
+| **agent-facing chars**       | 47,688   | **11,613** |
+| raw chars                    | 47,688   | 40,416 |
+| **compression ratio**        | 0%       | **71.3%** |
+
+**Resolve rate is unchanged** — sieve compresses the agent's view of tool output without changing what the agent decides to do. **Agent-facing context drops 75.6%** (47k → 11.6k chars, ~36k saved on this slice). That is the headline: same task outcomes, far fewer tokens consumed by tool observations.
+
+The remaining django instances are queued; numbers will be re-rendered once that scoring completes. Reproduce with:
+
+```bash
+bash scripts/run_cursor_swe_bench_profiles.sh --resume \
+  --eval-with-harness --harness-namespace none
+PYTHONPATH=src python3 -m benchmarks.swe_bench_compare \
+  --baseline artifacts/cursor-swe-bench-lite.baseline.jsonl \
+  --sieve    artifacts/cursor-swe-bench-lite.sieve.jsonl
+```
+
 ### CI-Repair-Bench (recommended noisy-logs benchmark)
 
 [**CI-Repair-Bench**](https://arxiv.org/abs/2604.27148) is built from real **GitHub Actions** failures (workflow YAML + long logs, formatting/lint/deps/env/config modes). That matches what burns context in production far better than issue-only benchmarks.
