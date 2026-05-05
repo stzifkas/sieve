@@ -1,0 +1,20 @@
+{
+  "instance_id": "demo_instance",
+  "trajectory": [
+    {
+      "action": "pytest tests/ -q",
+      "observation": "=========================== short test summary info ============================\nFAILED tests/test_views.py::TestUserViewSet::test_user_update - AssertionError\n========================= 1 failed, 141 passed in 0.12s =========================\n",
+      "exit_code": 1
+    },
+    {
+      "action": "pytest tests/ -q",
+      "observation": "=========================== short test summary info ============================\nFAILED tests/test_views.py::TestUserViewSet::test_user_update - AssertionError\n========================= 1 failed, 141 passed in 0.12s =========================\n",
+      "exit_code": 1
+    },
+    {
+      "action": "python app.py",
+      "observation": "Traceback (most recent call last):\n  File \"app.py\", line 1, in <module>\n    main()\nTypeError: boom\n",
+      "exit_code": 1
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+{"instance_id":"proj1-1","resolved":false,"model_patch":"","context":{"raw_chars":1000,"agent_chars":1000}}
+{"instance_id":"proj1-2","resolved":true,"model_patch":"diff --git a/x b/x\n","context":{"raw_chars":800,"agent_chars":800}}

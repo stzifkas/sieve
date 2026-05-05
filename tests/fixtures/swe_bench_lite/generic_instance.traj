@@ -1,0 +1,9 @@
+{
+  "instance_id": "generic_instance",
+  "trajectory": [
+    {
+      "action": "cat debug.log",
+      "observation": "line 1\nline 2\nline 3\n"
+    }
+  ]
+}
