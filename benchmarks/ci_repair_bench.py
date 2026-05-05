@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from dataclasses import dataclass
 from typing import Any
@@ -25,6 +26,46 @@ from typing import Any
 from sieve import CompressSession
 
 CHARS_PER_TOKEN = 4
+ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
+TIMESTAMP_RE = re.compile(r"^\ufeff?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+")
+GHA_MARKER_RE = re.compile(r"^##\[(?:group|endgroup|error|warning|notice|debug)\]")
+RUN_LINE_RE = re.compile(r"^Run\s+(?P<command>.+?)\s*$")
+STREAM_PREFIX_RE = re.compile(r"^(stdout|stderr):\s*")
+NOISE_PREFIXES = (
+    "Current runner version:",
+    "Prepare workflow directory",
+    "Prepare all required actions",
+    "Getting action download info",
+    "Download action repository ",
+    "Post job cleanup.",
+    "Cleaning up orphan processes",
+    "Secret source:",
+    "Complete job name:",
+    "Temporarily overriding HOME=",
+    "Adding repository directory to the temporary git global config as a safe directory",
+)
+NOISE_LINES = {
+    "Runner Image Provisioner",
+    "Operating System",
+    "Runner Image",
+    "GITHUB_TOKEN Permissions",
+}
+
+
+@dataclass(frozen=True)
+class CIRepairStep:
+    name: str
+    command: str
+    raw_log: str
+    normalized_log: str
+
+    @property
+    def raw_chars(self) -> int:
+        return len(self.raw_log)
+
+    @property
+    def normalized_chars(self) -> int:
+        return len(self.normalized_log)
 
 
 @dataclass(frozen=True)
@@ -33,18 +74,39 @@ class CIRepairRow:
     repo_label: str
     workflow_name: str
     error_types: tuple[str, ...]
-    observation: str
+    workflow: str
+    steps: tuple[CIRepairStep, ...]
     exit_code: int = 1
+
+    @property
+    def observation(self) -> str:
+        return render_observation(self.workflow, self.steps)
+
+
+@dataclass(frozen=True)
+class CIRepairStepBenchmarkResult:
+    parser: str
+    command: str
+    step_name: str
+    raw_chars: int
+    compressed_chars: int
+    delta_hit: bool
+    dedup_hit: bool
+
+    @property
+    def ratio(self) -> float:
+        if self.raw_chars == 0:
+            return 0.0
+        return 1 - self.compressed_chars / self.raw_chars
 
 
 @dataclass(frozen=True)
 class CIRepairBenchmarkResult:
     instance_id: str
-    parser: str
+    workflow_chars: int
+    step_results: tuple[CIRepairStepBenchmarkResult, ...]
     raw_chars: int
     compressed_chars: int
-    delta_hit: bool
-    dedup_hit: bool
     error_types: tuple[str, ...]
 
     @property
@@ -74,13 +136,135 @@ def flatten_logs(logs: Any) -> str:
     return "\n\n".join(parts)
 
 
+def _normalize_gha_line(line: str) -> str | None:
+    line = line.lstrip("\ufeff")
+    line = ANSI_RE.sub("", line)
+    line = TIMESTAMP_RE.sub("", line)
+    line = GHA_MARKER_RE.sub("", line).strip()
+    if line.startswith("[command]/"):
+        line = line[len("[command]/") :].strip()
+    line = STREAM_PREFIX_RE.sub("", line).strip()
+    if not line:
+        return None
+    if line in NOISE_LINES:
+        return None
+    if line.startswith(NOISE_PREFIXES):
+        return None
+    if line.startswith(("shell:", "env:")):
+        return None
+    return line
+
+
+def _split_log_into_steps(
+    log_text: str,
+    *,
+    fallback_name: str,
+    fallback_command: str,
+) -> list[CIRepairStep]:
+    raw_lines = log_text.splitlines()
+    steps: list[CIRepairStep] = []
+    current_name = fallback_name
+    current_command = fallback_command
+    current_raw: list[str] = []
+    current_norm: list[str] = []
+    saw_run_marker = False
+
+    def flush() -> None:
+        nonlocal current_raw, current_norm, current_name, current_command
+        if not current_raw and not current_norm:
+            return
+        normalized_log = "\n".join(line for line in current_norm if line).strip()
+        raw_log = "\n".join(current_raw).strip()
+        if not raw_log and not normalized_log:
+            return
+        steps.append(
+            CIRepairStep(
+                name=current_name,
+                command=current_command,
+                raw_log=raw_log,
+                normalized_log=normalized_log,
+            )
+        )
+        current_raw = []
+        current_norm = []
+
+    for raw_line in raw_lines:
+        normalized = _normalize_gha_line(raw_line)
+        run_match = RUN_LINE_RE.match(normalized or "")
+        if run_match:
+            saw_run_marker = True
+            flush()
+            current_command = run_match.group("command").strip()
+            current_name = current_command
+            continue
+        if normalized is None:
+            continue
+        current_raw.append(raw_line.rstrip())
+        current_norm.append(normalized)
+
+    flush()
+    if steps or saw_run_marker:
+        return steps
+
+    normalized_lines = [
+        line for line in (_normalize_gha_line(raw_line) for raw_line in raw_lines) if line
+    ]
+    return [
+        CIRepairStep(
+            name=fallback_name,
+            command=fallback_command,
+            raw_log=log_text.strip(),
+            normalized_log="\n".join(normalized_lines).strip(),
+        )
+    ]
+
+
+def extract_steps(logs: Any, *, workflow_name: str = "github actions") -> tuple[CIRepairStep, ...]:
+    if not isinstance(logs, list):
+        return ()
+    steps: list[CIRepairStep] = []
+    for i, item in enumerate(logs):
+        if not isinstance(item, dict):
+            continue
+        raw_log = item.get("log") or ""
+        if not isinstance(raw_log, str):
+            raw_log = str(raw_log)
+        step_name = item.get("step_name") or item.get("setp_name") or item.get("name") or ""
+        if not isinstance(step_name, str) or not step_name.strip():
+            step_name = f"log chunk {i}"
+        fallback_command = step_name
+        steps.extend(
+            _split_log_into_steps(
+                raw_log,
+                fallback_name=step_name.strip(),
+                fallback_command=fallback_command.strip(),
+            )
+        )
+    return tuple(step for step in steps if step.raw_log or step.normalized_log)
+
+
+def render_observation(workflow: str, steps: tuple[CIRepairStep, ...]) -> str:
+    parts: list[str] = []
+    if workflow.strip():
+        parts.append(f"# Workflow (YAML)\n{workflow.strip()}")
+    if steps:
+        rendered_steps = []
+        for step in steps:
+            body = step.normalized_log or step.raw_log
+            rendered_steps.append(
+                f"## Step: {step.name}\n$ {step.command}\n{body}".rstrip()
+            )
+        parts.append("# CI execution logs\n" + "\n\n".join(rendered_steps))
+    return "\n\n".join(parts).strip()
+
+
 def build_observation(row: dict[str, Any]) -> str:
-    """Workflow file contents + CI logs (no oracle patch)."""
+    """Workflow file contents + normalized CI step logs (no oracle patch)."""
     wf = row.get("workflow") or ""
     if not isinstance(wf, str):
         wf = str(wf)
-    logs_blob = flatten_logs(row.get("logs"))
-    return f"# Workflow (YAML)\n{wf}\n\n# CI execution logs\n{logs_blob}"
+    steps = extract_steps(row.get("logs"), workflow_name=str(row.get("workflow_name") or ""))
+    return render_observation(wf, steps)
 
 
 def _error_types_tuple(row: dict[str, Any]) -> tuple[str, ...]:
@@ -109,14 +293,17 @@ def load_hf_rows(*, limit: int = 0) -> list[CIRepairRow]:
         owner = row.get("repo_owner") or ""
         name = row.get("repo_name") or ""
         repo_label = f"{owner}/{name}".strip("/")
-        observation = build_observation(row)
+        workflow = row.get("workflow") or ""
+        if not isinstance(workflow, str):
+            workflow = str(workflow)
         out.append(
             CIRepairRow(
                 instance_id=oid,
                 repo_label=repo_label,
                 workflow_name=str(row.get("workflow_name") or ""),
                 error_types=_error_types_tuple(row),
-                observation=observation,
+                workflow=workflow,
+                steps=extract_steps(row.get("logs"), workflow_name=str(row.get("workflow_name") or "")),
                 exit_code=1,
             )
         )
@@ -137,36 +324,62 @@ def benchmark_rows(
     sessions: dict[str, CompressSession] = {}
     results: list[CIRepairBenchmarkResult] = []
     for row in rows:
+        workflow_chars = len(row.workflow)
+        raw_chars = workflow_chars + sum(step.raw_chars for step in row.steps)
         if not sieve:
+            step_results = tuple(
+                CIRepairStepBenchmarkResult(
+                    parser="passthrough",
+                    command=step.command,
+                    step_name=step.name,
+                    raw_chars=step.raw_chars,
+                    compressed_chars=step.raw_chars,
+                    delta_hit=False,
+                    dedup_hit=False,
+                )
+                for step in row.steps
+            )
             results.append(
                 CIRepairBenchmarkResult(
                     instance_id=row.instance_id,
-                    parser="passthrough",
-                    raw_chars=len(row.observation),
-                    compressed_chars=len(row.observation),
-                    delta_hit=False,
-                    dedup_hit=False,
+                    workflow_chars=workflow_chars,
+                    step_results=step_results,
+                    raw_chars=raw_chars,
+                    compressed_chars=workflow_chars + sum(s.compressed_chars for s in step_results),
                     error_types=row.error_types,
                 )
             )
             continue
 
         session = sessions.setdefault(row.instance_id, CompressSession())
-        cmd = _derive_command(row)
-        outcome = session.compress(
-            command=cmd,
-            stdout=row.observation,
-            exit_code=row.exit_code,
-        )
-        text = outcome.text
+        step_results_list: list[CIRepairStepBenchmarkResult] = []
+        for step in row.steps:
+            cmd = step.command or _derive_command(row)
+            stdout = step.normalized_log or step.raw_log
+            outcome = session.compress(
+                command=cmd,
+                stdout=stdout,
+                exit_code=row.exit_code,
+            )
+            step_results_list.append(
+                CIRepairStepBenchmarkResult(
+                    parser=outcome.parsed.tool_type,
+                    command=cmd,
+                    step_name=step.name,
+                    raw_chars=step.raw_chars,
+                    compressed_chars=len(outcome.text),
+                    delta_hit=bool(outcome.compressed.metadata.get("delta_hit")),
+                    dedup_hit=bool(outcome.compressed.metadata.get("dedup_hit")),
+                )
+            )
+        step_results = tuple(step_results_list)
         results.append(
             CIRepairBenchmarkResult(
                 instance_id=row.instance_id,
-                parser=outcome.parsed.tool_type,
-                raw_chars=len(row.observation),
-                compressed_chars=len(text),
-                delta_hit=bool(outcome.compressed.metadata.get("delta_hit")),
-                dedup_hit=bool(outcome.compressed.metadata.get("dedup_hit")),
+                workflow_chars=workflow_chars,
+                step_results=step_results,
+                raw_chars=raw_chars,
+                compressed_chars=workflow_chars + sum(s.compressed_chars for s in step_results),
                 error_types=row.error_types,
             )
         )
@@ -174,24 +387,31 @@ def benchmark_rows(
 
 
 def summarize(results: list[CIRepairBenchmarkResult]) -> dict[str, Any]:
+    workflow_total = sum(r.workflow_chars for r in results)
     raw_total = sum(r.raw_chars for r in results)
     cmp_total = sum(r.compressed_chars for r in results)
+    log_raw_total = raw_total - workflow_total
+    total_steps = sum(len(r.step_results) for r in results)
     parser_hits = sum(
-        1 for r in results if r.parser not in ("generic", "passthrough")
+        1
+        for r in results
+        for step in r.step_results
+        if step.parser not in ("generic", "passthrough")
     )
-    delta_hits = sum(1 for r in results if r.delta_hit)
-    dedup_hits = sum(1 for r in results if r.dedup_hit)
+    delta_hits = sum(1 for r in results for step in r.step_results if step.delta_hit)
+    dedup_hits = sum(1 for r in results for step in r.step_results if step.dedup_hit)
 
     by_parser: dict[str, dict[str, int]] = {}
     by_error: dict[str, dict[str, int]] = {}
     for r in results:
-        pk = by_parser.setdefault(
-            r.parser,
-            {"instances": 0, "raw_chars": 0, "compressed_chars": 0},
-        )
-        pk["instances"] += 1
-        pk["raw_chars"] += r.raw_chars
-        pk["compressed_chars"] += r.compressed_chars
+        for step in r.step_results:
+            pk = by_parser.setdefault(
+                step.parser,
+                {"steps": 0, "raw_chars": 0, "compressed_chars": 0},
+            )
+            pk["steps"] += 1
+            pk["raw_chars"] += step.raw_chars
+            pk["compressed_chars"] += step.compressed_chars
 
         ek = "/".join(sorted(r.error_types)) if r.error_types else "(none)"
         eb = by_error.setdefault(
@@ -204,13 +424,16 @@ def summarize(results: list[CIRepairBenchmarkResult]) -> dict[str, Any]:
 
     return {
         "instances": len(results),
+        "steps": total_steps,
+        "workflow_chars": workflow_total,
+        "log_chars": log_raw_total,
         "raw_chars": raw_total,
         "compressed_chars": cmp_total,
         "ratio": 1 - cmp_total / raw_total if raw_total else 0.0,
         "estimated_tokens_saved": (raw_total - cmp_total) // CHARS_PER_TOKEN,
-        "parser_coverage": parser_hits / len(results) if results else 0.0,
-        "delta_hit_rate": delta_hits / len(results) if results else 0.0,
-        "dedup_hit_rate": dedup_hits / len(results) if results else 0.0,
+        "parser_coverage": parser_hits / total_steps if total_steps else 0.0,
+        "delta_hit_rate": delta_hits / total_steps if total_steps else 0.0,
+        "dedup_hit_rate": dedup_hits / total_steps if total_steps else 0.0,
         "parsers": {
             p: {
                 **st,
@@ -234,11 +457,16 @@ def summarize(results: list[CIRepairBenchmarkResult]) -> dict[str, Any]:
 
 def render_text(summary: dict[str, Any]) -> str:
     lines: list[str] = []
-    lines.append("CI-Repair-Bench observation compression (workflow + logs, no diff)")
+    lines.append("CI-Repair-Bench observation compression (workflow + normalized CI steps, no diff)")
     lines.append("=" * 78)
     lines.append(
-        f"instances={summary['instances']} raw={summary['raw_chars']} "
+        f"instances={summary['instances']} steps={summary['steps']} "
+        f"raw={summary['raw_chars']} "
         f"cmp={summary['compressed_chars']} ratio={summary['ratio']:.1%}"
+    )
+    lines.append(
+        f"workflow chars={summary['workflow_chars']} "
+        f"log chars={summary['log_chars']}"
     )
     lines.append(
         f"parser coverage={summary['parser_coverage']:.1%} "
@@ -249,11 +477,11 @@ def render_text(summary: dict[str, Any]) -> str:
         f"dedup hit rate={summary['dedup_hit_rate']:.1%}"
     )
     lines.append("")
-    lines.append(f"{'parser':<22} {'n':>6} {'raw':>12} {'cmp':>12} {'ratio':>8}")
+    lines.append(f"{'parser':<22} {'steps':>6} {'raw':>12} {'cmp':>12} {'ratio':>8}")
     lines.append("-" * 78)
     for parser, st in summary["parsers"].items():
         lines.append(
-            f"{parser:<22} {st['instances']:>6} {st['raw_chars']:>12} "
+            f"{parser:<22} {st['steps']:>6} {st['raw_chars']:>12} "
             f"{st['compressed_chars']:>12} {st['ratio']:>7.1%}"
         )
     lines.append("")
@@ -338,13 +566,24 @@ def main(argv: list[str] | None = None) -> int:
                     "instances": [
                         {
                             "instance_id": r.instance_id,
-                            "parser": r.parser,
+                            "workflow_chars": r.workflow_chars,
+                            "steps": [
+                                {
+                                    "parser": step.parser,
+                                    "command": step.command,
+                                    "step_name": step.step_name,
+                                    "raw_chars": step.raw_chars,
+                                    "compressed_chars": step.compressed_chars,
+                                    "ratio": step.ratio,
+                                    "delta_hit": step.delta_hit,
+                                    "dedup_hit": step.dedup_hit,
+                                }
+                                for step in r.step_results
+                            ],
                             "error_types": list(r.error_types),
                             "raw_chars": r.raw_chars,
                             "compressed_chars": r.compressed_chars,
                             "ratio": r.ratio,
-                            "delta_hit": r.delta_hit,
-                            "dedup_hit": r.dedup_hit,
                         }
                         for r in results
                     ],
