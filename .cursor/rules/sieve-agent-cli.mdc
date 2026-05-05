@@ -1,0 +1,24 @@
+---
+description: Sieve wrapping for agent-visible shell commands (hooks + manual fallback).
+alwaysApply: true
+---
+
+# Sieve for agent-visible commands
+
+**Cursor:** `preToolUse` + matcher `Shell` runs `.cursor/hooks/sieve_pre_shell.py`, which rewrites noisy one-line commands to:
+
+`uv run python <repo>/scripts/sieved_run.py -- <original command>`
+
+**Claude Code:** register `PreToolUse` → `.claude/hooks/sieve_bash_rewrite.py` (see `.claude/settings.example.json`).
+
+Opt out of rewriting by including `--raw`, `verbatim`, or `full log` in the command string.
+
+**Manual fallback** (hooks off or unsupported client):
+
+```bash
+uv run python scripts/sieved_run.py -- pytest tests/ -q
+```
+
+Optional raw transcripts: `SIEVE_SAVE_RAW=1` or `--save-raw` / `--save-raw-dir` on `sieved_run.py` → `.sieve/runs/` (gitignored).
+
+For MCP-based shells, prefer the **Sieve MCP proxy** on the server instead of shell hooks.

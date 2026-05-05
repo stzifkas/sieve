@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": "python3 .cursor/hooks/sieve_pre_shell.py",
+        "matcher": "Shell"
+      }
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "mcpServers": {
+    "everything-raw": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-everything"
+      ],
+      "cwd": "/home/stzifkas/projects/agent_compress"
+    },
+    "sieve-everything": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-m",
+        "sieve.integrations.mcp",
+        "--",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-everything"
+      ],
+      "cwd": "/home/stzifkas/projects/agent_compress"
+    },
+    "filesystem-raw": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/stzifkas/projects/agent_compress"
+      ],
+      "cwd": "/home/stzifkas/projects/agent_compress"
+    },
+    "sieve-filesystem": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-m",
+        "sieve.integrations.mcp",
+        "--",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/stzifkas/projects/agent_compress"
+      ],
+      "cwd": "/home/stzifkas/projects/agent_compress"
+    }
+  }
+}
