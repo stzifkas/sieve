@@ -580,32 +580,34 @@ proxy.serve()  # Exposes same tools as upstream, with compressed output
 ### 4.4 Configuration
 
 ```python
-@dataclass
+@dataclass(slots=True)
 class CompressConfig:
     # Output format
     format: OutputFormat = OutputFormat.PLAIN
 
     # Delta compression
     delta_mode: bool = True              # Enable cross-turn deduplication
-    max_history_turns: int = 20          # How far back to track state
 
     # Parser behavior
     max_raw_lines: int = 50              # Fallback truncation threshold
     include_pattern_hints: bool = True   # Add "Pattern: ..." annotations
-    include_fix_hints: bool = False      # Add suggested fixes (costs tokens)
-
-    # Granularity controls
-    test_detail: Literal["full", "delta", "summary"] = "delta"
-    error_detail: Literal["full", "compressed", "minimal"] = "compressed"
-    build_detail: Literal["full", "status_only"] = "status_only"
 
     # Safety
     passthrough_on_error: bool = True    # If parser fails, return raw output
-    max_compression_ratio: float = 0.95  # Never compress more than 95%
+    max_compression_ratio: float = 0.95  # Cap on the *reported* ratio
 
     # Telemetry
     track_stats: bool = True             # Collect compression statistics
+
+    # Generic-fallback shaping
+    generic_head_lines: int = 20         # Lines kept from the head of long output
+    generic_tail_lines: int = 20         # Lines kept from the tail of long output
+    generic_dedup_threshold: int = 3     # Collapse runs of N+ identical lines
 ```
+
+> Per-tool granularity controls (`test_detail`, `error_detail`, `build_detail`)
+> are a planned extension and are intentionally not part of the current public
+> `CompressConfig`.
 
 ---
 
