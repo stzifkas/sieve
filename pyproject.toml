@@ -39,6 +39,10 @@ Repository = "https://github.com/stzifkas/sieve"
 Issues = "https://github.com/stzifkas/sieve/issues"
 
 [dependency-groups]
+# `mcp` is also declared as the `mcp` optional-dependency (extra). It is
+# repeated here because `uv sync` does not install extras by default, and the
+# MCP proxy tests need it present in the default dev environment. Keep the
+# version specifier in sync with the extra above.
 dev = ["mcp>=1.0.0", "ruff>=0.6"]
 swe-eval = ["swebench>=4.0", "datasets>=2.14"]
 
