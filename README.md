@@ -33,7 +33,7 @@ Benchmark over the 22-sample fixture corpus in `tests/fixtures/` (`uv run python
 
 A 5-turn delta scenario where the same pytest failure repeats compresses to **86.3%** cumulative — turn 1 is 297 chars, turns 2-5 collapse to 238 chars each ("PYTEST DELTA: unchanged" + still-failing nodeids).
 
-The compressor enforces a never-larger-than-raw invariant: on inputs already smaller than the framing overhead (mypy clean output, ESLint with terse messages, etc.) it passes the raw text through unchanged. The low ratios on those categories aren't a bug — there's nothing to compress; the structured items are still extracted and used for cross-turn delta dedup.
+The compressor enforces a never-larger-than-raw invariant on its default `plain` output: on inputs already smaller than the framing overhead (mypy clean output, ESLint with terse messages, etc.) it passes the raw text through unchanged. The low ratios on those categories aren't a bug — there's nothing to compress; the structured items are still extracted and used for cross-turn delta dedup. (The `structured` and `xml` formats wrap the result in a JSON/XML envelope, so on tiny inputs the framed output can exceed the raw size — they trade bytes for machine-readability.)
 
 ### End-to-end agent run (SWE-bench Lite, Cursor Composer-2)
 
@@ -49,7 +49,7 @@ Paired baseline-vs-sieve trial with **Cursor CLI / Composer-2**, scored by the o
 | raw chars                    | 47,688   | 40,416 |
 | **compression ratio**        | 0%       | **71.3%** |
 
-**Resolve rate is unchanged** and **agent-facing context drops 75.6%** (47k → 11.6k chars). Reproduce with:
+**Resolve rate is unchanged** and **agent-facing context drops 75.6%** (47k → 11.6k chars). This is a small-N pilot (4 instances scored) — treat it as a directional signal, not a statistically robust result. The fixture-corpus numbers above (N=22) are the methodologically clean measurement. Reproduce with:
 
 ```bash
 bash scripts/run_cursor_swe_bench_profiles.sh --resume \
@@ -201,6 +201,8 @@ That's the entire integration: the agent sees the same upstream tools, but every
 For non-shell tools, the proxy uses the tool name as the parser-router hint; for shell-like tools that take a `command` / `cmd` / `shellCommand` argument, the actual command string is forwarded so parser detection (pytest, mypy, etc.) works correctly.
 
 ## What it looks like
+
+*Illustrative example (hand-written to show the shape of the transform, not a captured fixture):*
 
 Raw pytest run with two failures (1,818 chars):
 
