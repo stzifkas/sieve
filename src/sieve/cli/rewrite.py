@@ -1,6 +1,7 @@
-"""Deterministic rewrite of shell commands to run through scripts/sieved_run.py.
+"""Deterministic rewrite of shell commands to run through ``sieve-run``.
 
-Used by Cursor `preToolUse` (Shell) and Claude Code `PreToolUse` (Bash) hooks.
+Used by the Claude Code ``PreToolUse`` (Bash) and Cursor ``preToolUse`` (Shell)
+hooks shipped in ``sieve.hooks``.
 """
 
 from __future__ import annotations
@@ -8,7 +9,6 @@ from __future__ import annotations
 import os
 import re
 import shlex
-from pathlib import Path
 
 # Commands whose stdout/stderr usually bloat agent context.
 NOISY_PREFIXES: tuple[str, ...] = (
@@ -36,40 +36,49 @@ RAW_HINTS: tuple[str, ...] = (
     "full logs",
 )
 
+DEFAULT_RUN_BIN = "sieve-run"
 
-def _wrapper_prefix(repo_root: Path) -> str:
-    """Prefix that works even when Shell cwd is another repo (SWE-bench checkouts)."""
-    sr = repo_root.resolve()
-    parts = [
-        "uv",
-        "run",
-        "--directory",
-        shlex.quote(str(sr)),
-        "python",
-        shlex.quote(str(sr / "scripts" / "sieved_run.py")),
-    ]
+
+def _run_bin_argv() -> list[str]:
+    """Return the argv prefix that invokes the sieve runner.
+
+    Override with ``SIEVE_RUN_BIN`` (whitespace-split via shlex) for editable
+    installs or unusual environments. Default assumes ``sieve-run`` is on PATH.
+    """
+    override = os.environ.get("SIEVE_RUN_BIN", "").strip()
+    if override:
+        return shlex.split(override)
+    return [DEFAULT_RUN_BIN]
+
+
+def _wrapper_prefix() -> str:
+    parts = list(_run_bin_argv())
     if os.environ.get("SIEVE_NO_SIEVE", "").lower() in ("1", "true", "yes"):
         parts.append("--no-sieve")
     if os.environ.get("SIEVE_SAVE_RAW", "").lower() in ("1", "true", "yes"):
         parts.append("--save-raw")
     save_raw_dir = os.environ.get("SIEVE_SAVE_RAW_DIR", "").strip()
     if save_raw_dir:
-        parts.extend(["--save-raw-dir", shlex.quote(save_raw_dir)])
+        parts.extend(["--save-raw-dir", save_raw_dir])
     session_file = os.environ.get("SIEVE_SESSION_FILE", "").strip()
     if session_file:
-        parts.extend(["--session-file", shlex.quote(session_file)])
+        parts.extend(["--session-file", session_file])
     parts.append("--")
-    return " ".join(parts)
+    return " ".join(shlex.quote(p) if i > 0 else p for i, p in enumerate(parts))
 
 
-def already_wrapped(command: str, repo_root: Path) -> bool:
+def already_wrapped(command: str) -> bool:
     stripped = command.strip()
     if not stripped:
         return False
-    pref = _wrapper_prefix(repo_root)
+    pref = _wrapper_prefix()
     if stripped.startswith(pref):
         return True
-    return "scripts/sieved_run.py" in stripped
+    if stripped.startswith(DEFAULT_RUN_BIN + " "):
+        return True
+    if "sieve.cli.run" in stripped:
+        return True
+    return False
 
 
 def _blocked_by_raw_hint(command: str) -> bool:
@@ -82,17 +91,17 @@ def _rest_is_noisy(rest: str) -> bool:
     return any(r == p or r.startswith(p + " ") for p in NOISY_PREFIXES)
 
 
-def rewrite_shell_command(command: str, repo_root: Path) -> str:
-    """Return a new command string, or the original if no rewrite applies."""
+def rewrite_shell_command(command: str) -> str:
+    """Return a rewritten command string, or the original if no rewrite applies."""
     stripped = command.strip()
     if not stripped:
         return command
-    if already_wrapped(stripped, repo_root):
+    if already_wrapped(stripped):
         return command
     if _blocked_by_raw_hint(stripped):
         return command
 
-    wrap = _wrapper_prefix(repo_root)
+    wrap = _wrapper_prefix()
 
     match = re.match(r"^((?:[A-Za-z_][A-Za-z0-9_]*=\S+\s+)+)(.+)$", stripped)
     if match:

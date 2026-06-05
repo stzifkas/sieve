@@ -1,39 +1,34 @@
 from __future__ import annotations
 
 import os
-import sys
 import unittest
-from pathlib import Path
 from unittest.mock import patch
 
-REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO / "scripts"))
-
-from sieve_command_rewrite import rewrite_shell_command
+from sieve.cli.rewrite import rewrite_shell_command
 
 
 class RewriteTests(unittest.TestCase):
     def test_wraps_pytest(self) -> None:
         cmd = "pytest tests/ -q"
-        out = rewrite_shell_command(cmd, REPO)
-        self.assertIn("scripts/sieved_run.py", out)
+        out = rewrite_shell_command(cmd)
+        self.assertIn("sieve-run", out)
         self.assertTrue(out.endswith(cmd))
 
     def test_no_double_wrap(self) -> None:
         inner = "pytest tests/"
-        wrapped = rewrite_shell_command(inner, REPO)
-        again = rewrite_shell_command(wrapped, REPO)
+        wrapped = rewrite_shell_command(inner)
+        again = rewrite_shell_command(wrapped)
         self.assertEqual(again, wrapped)
 
     def test_respects_raw_hint(self) -> None:
         cmd = "pytest tests/ --raw output please"
-        self.assertEqual(rewrite_shell_command(cmd, REPO), cmd)
+        self.assertEqual(rewrite_shell_command(cmd), cmd)
 
     def test_preserves_env_assignments(self) -> None:
         cmd = "DJANGO_SETTINGS_MODULE=tests.settings pytest tests/"
-        out = rewrite_shell_command(cmd, REPO)
+        out = rewrite_shell_command(cmd)
         self.assertTrue(out.startswith("DJANGO_SETTINGS_MODULE=tests.settings "))
-        self.assertIn("sieved_run.py", out)
+        self.assertIn("sieve-run", out)
 
     def test_wrapper_respects_env_config(self) -> None:
         cmd = "pytest tests/ -q"
@@ -47,12 +42,24 @@ class RewriteTests(unittest.TestCase):
             },
             clear=False,
         ):
-            out = rewrite_shell_command(cmd, REPO)
+            out = rewrite_shell_command(cmd)
 
         self.assertIn("--no-sieve", out)
         self.assertIn("--save-raw", out)
         self.assertIn("--save-raw-dir '/tmp/sieve runs'", out)
         self.assertIn("--session-file /tmp/sieve-session.json", out)
+
+    def test_run_bin_override(self) -> None:
+        cmd = "pytest tests/ -q"
+        with patch.dict(
+            os.environ,
+            {"SIEVE_RUN_BIN": "python3 -m sieve.cli.run"},
+            clear=False,
+        ):
+            out = rewrite_shell_command(cmd)
+
+        self.assertIn("python3 -m sieve.cli.run", out)
+        self.assertNotIn("sieve-run --", out)
 
 
 if __name__ == "__main__":

@@ -1,14 +1,6 @@
-#!/usr/bin/env python3
-"""Run a subprocess and print agent-facing output for shell-tool runs.
+"""Execute a subprocess and emit compressed agent-facing output.
 
-Usage (from repo root, with deps installed):
-
-    uv run python scripts/sieved_run.py -- pytest tests/ -q
-    uv run python scripts/sieved_run.py --no-sieve -- pytest tests/ -q
-    uv run python scripts/sieved_run.py --save-raw -- pytest tests/ -q
-    SIEVE_SAVE_RAW=1 uv run python scripts/sieved_run.py -- pytest tests/
-
-Exit code matches the child process so failures still propagate.
+Exposed as the ``sieve-run`` console script and as ``sieve run -- ...``.
 """
 
 from __future__ import annotations
@@ -29,30 +21,30 @@ from sieve.session import FileSnapshot, SessionState
 from sieve.stats import TokenStats
 
 
+USAGE = (
+    "usage: sieve-run [--no-sieve] [--save-raw] [--save-raw-dir DIR] "
+    "[--session-file PATH] -- <command> [args...]"
+)
+
+
 def _parse_argv(argv: list[str]) -> tuple[argparse.Namespace, list[str]]:
     if "--" not in argv:
-        print(
-            "usage: sieved_run.py [--no-sieve] [--save-raw] [--save-raw-dir DIR] -- <command> [args...]",
-            file=sys.stderr,
-        )
+        print(USAGE, file=sys.stderr)
         raise SystemExit(2)
     sep = argv.index("--")
     pre, post = argv[:sep], argv[sep + 1 :]
     if not post:
-        print(
-            "usage: sieved_run.py [--no-sieve] [--save-raw] [--save-raw-dir DIR] -- <command> [args...]",
-            file=sys.stderr,
-        )
+        print(USAGE, file=sys.stderr)
         raise SystemExit(2)
 
-    p = argparse.ArgumentParser(prog="sieved_run.py", add_help=False)
+    p = argparse.ArgumentParser(prog="sieve-run", add_help=False)
     p.add_argument("--no-sieve", action="store_true")
     p.add_argument("--save-raw", action="store_true")
     p.add_argument("--save-raw-dir", default=".sieve/runs")
     p.add_argument("--session-file", default=".sieve/session.json")
     opts, rest = p.parse_known_args(pre)
     if rest:
-        print(f"sieved_run.py: unknown arguments before --: {rest}", file=sys.stderr)
+        print(f"sieve-run: unknown arguments before --: {rest}", file=sys.stderr)
         raise SystemExit(2)
 
     env_save = os.environ.get("SIEVE_SAVE_RAW", "").lower() in ("1", "true", "yes")
@@ -208,8 +200,10 @@ def _should_passthrough_pytest_error(
     return any(hint in raw_text for hint in error_hints)
 
 
-def main() -> None:
-    opts, cmd_argv = _parse_argv(sys.argv[1:])
+def main(argv: list[str] | None = None) -> int:
+    if argv is None:
+        argv = sys.argv[1:]
+    opts, cmd_argv = _parse_argv(argv)
     command_display = " ".join(cmd_argv)
     proc = subprocess.run(cmd_argv, capture_output=True, text=True)
     raw_text = _combined_output(proc)
@@ -261,8 +255,8 @@ def main() -> None:
     sys.stdout.write(agent_text)
     if agent_text and not agent_text.endswith("\n"):
         sys.stdout.write("\n")
-    raise SystemExit(proc.returncode)
+    return proc.returncode
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -2,21 +2,17 @@ from __future__ import annotations
 
 import json
 import os
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO / "scripts"))
-
-from sieved_run import (
+from sieve import CompressSession
+from sieve.cli.run import (
     _load_session_state,
     _parse_argv,
     _save_session_state,
     _should_passthrough_pytest_error,
 )
-from sieve import CompressSession
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
