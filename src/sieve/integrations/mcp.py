@@ -44,11 +44,10 @@ try:
 except ImportError as exc:  # pragma: no cover - optional dep guard
     raise ImportError(
         "sieve.integrations.mcp requires the optional 'mcp' dependency. "
-        "Install with: pip install 'sieve[mcp]'"
+        "Install with: pip install 'agent-sieve[mcp]'"
     ) from exc
 
 from sieve import CompressConfig, CompressSession
-
 
 ContentBlock = TextContent | ImageContent | EmbeddedResource
 
