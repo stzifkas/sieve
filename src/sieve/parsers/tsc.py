@@ -5,7 +5,6 @@ import re
 from sieve.config import CompressConfig
 from sieve.core import DiagnosticItem, RawExecution, Severity, Status, StructuredOutput
 
-
 # Pretty format: src/foo.ts:12:5 - error TS2345: message
 PRETTY_RE = re.compile(
     r"^(?P<file>.+?):(?P<line>\d+):(?P<col>\d+)\s+-\s+"

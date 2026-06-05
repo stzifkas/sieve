@@ -5,7 +5,6 @@ import re
 from sieve.config import CompressConfig
 from sieve.core import RawExecution, Severity, Status, StructuredOutput, TextOutputItem
 
-
 SUCCESS_RE = re.compile(r"^Successfully installed\s+(.+)$")
 PIP_COMMAND_RE = re.compile(r"\b(?:pip3?|python3?\s+-m\s+pip)\s+install\b")
 # Pip emits authoritative failure messages with uppercase ERROR:. Subprocess
@@ -61,7 +60,9 @@ class PipParser:
             summary=summary,
             items=items,
             raw_line_count=len(lines),
-            compressed_line_count=1 if not items else 1 + len(error_block.splitlines() if error_block else []),
+            compressed_line_count=(
+                1 if not items else 1 + len(error_block.splitlines() if error_block else [])
+            ),
             raw_content=raw,
             metadata={"installed_packages": installed} if installed else {},
         )

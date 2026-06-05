@@ -8,7 +8,6 @@ from pathlib import Path
 
 from benchmarks.swe_bench_compare import compare_rows, load_rows, main
 
-
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "swe_bench_compare"
 
 

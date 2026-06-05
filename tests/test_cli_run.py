@@ -14,7 +14,6 @@ from sieve.cli.run import (
     _should_passthrough_pytest_error,
 )
 
-
 FIXTURES = Path(__file__).parent / "fixtures"
 
 

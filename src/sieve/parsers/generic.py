@@ -32,7 +32,9 @@ class GenericParser:
             metadata={
                 "display_lines": compressed_lines,
                 "repeated_lines": {
-                    line: count for line, count in Counter(lines).items() if count >= self.config.generic_dedup_threshold
+                    line: count
+                    for line, count in Counter(lines).items()
+                    if count >= self.config.generic_dedup_threshold
                 },
             },
         )

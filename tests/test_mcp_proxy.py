@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock
 
 try:
     from mcp.types import (
@@ -134,6 +133,7 @@ class EndToEndProxyTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_proxy_compresses_pytest_output_round_trip(self) -> None:
         import sys
+
         from mcp.client.session import ClientSession
         from mcp.client.stdio import StdioServerParameters, stdio_client
 

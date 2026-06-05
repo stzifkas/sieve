@@ -5,7 +5,6 @@ from pathlib import Path
 
 from benchmarks.swe_bench_lite import benchmark_steps, load_trajectory_steps, summarize
 
-
 FIXTURES = Path(__file__).parent / "fixtures" / "swe_bench_lite"
 
 

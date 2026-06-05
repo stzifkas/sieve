@@ -13,7 +13,6 @@ from sieve.core import (
 )
 from sieve.session import SessionState
 
-
 DIAGNOSTIC_TOOLS = frozenset({"gcc", "tsc", "mypy", "eslint"})
 
 
@@ -86,7 +85,9 @@ class DeltaEngine:
         content = "\n".join(lines)
         return self._build_output(parsed, content, delta_hit=True)
 
-    def _compress_runtime(self, parsed: StructuredOutput, session: SessionState) -> CompressedOutput:
+    def _compress_runtime(
+        self, parsed: StructuredOutput, session: SessionState
+    ) -> CompressedOutput:
         item = parsed.items[0] if parsed.items else None
         if not isinstance(item, RuntimeErrorItem):
             return self._compress_generic(parsed)
@@ -173,7 +174,8 @@ class DeltaEngine:
     def _render_failures(self, failures: list[TestResult]) -> list[str]:
         lines: list[str] = []
         for failure in failures:
-            location = f"{Path(failure.file).name}:{failure.line}" if failure.line else Path(failure.file).name
+            name = Path(failure.file).name
+            location = f"{name}:{failure.line}" if failure.line else name
             lines.append(f"{self._result_prefix(failure)} {failure.id} ({location})")
             if failure.actual is not None and failure.expected is not None:
                 lines.append(f"  expected {failure.expected}, got {failure.actual}")

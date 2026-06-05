@@ -251,7 +251,7 @@ def _read_json(path: Path) -> dict[str, Any]:
     try:
         data = json.loads(path.read_text())
     except json.JSONDecodeError as exc:
-        raise SystemExit(f"sieve config: {path} is not valid JSON ({exc})")
+        raise SystemExit(f"sieve config: {path} is not valid JSON ({exc})") from exc
     if not isinstance(data, dict):
         raise SystemExit(f"sieve config: expected JSON object at {path}")
     return data

@@ -12,14 +12,13 @@ import os
 import subprocess
 import sys
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from sieve import CompressSession
 from sieve.core import ErrorSignature, RawExecution, TestResult
 from sieve.session import FileSnapshot, SessionState
 from sieve.stats import TokenStats
-
 
 USAGE = (
     "usage: sieve-run [--no-sieve] [--save-raw] [--save-raw-dir DIR] "
@@ -80,7 +79,7 @@ def _maybe_save_raw(
     if not base_dir.is_absolute():
         base_dir = Path.cwd() / base_dir
     base_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     uid = uuid.uuid4().hex[:8]
     stem = base_dir / f"{stamp}_{uid}"
     stem.with_suffix(".stdout.txt").write_text(proc.stdout)

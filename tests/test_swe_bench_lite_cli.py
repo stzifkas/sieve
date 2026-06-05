@@ -8,7 +8,6 @@ from pathlib import Path
 
 from benchmarks.swe_bench_lite import benchmark_steps, load_trajectory_steps, main
 
-
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "swe_bench_lite"
 
 

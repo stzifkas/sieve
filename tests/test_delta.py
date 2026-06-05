@@ -5,7 +5,6 @@ from pathlib import Path
 
 from sieve import CompressSession
 
-
 FIXTURES = Path(__file__).parent / "fixtures"
 
 

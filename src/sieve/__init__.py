@@ -1,4 +1,4 @@
-from .api import CompressSession, CompressionResult, wrap_tool
+from .api import CompressionResult, CompressSession, wrap_tool
 from .config import CompressConfig, OutputFormat
 
 __all__ = [

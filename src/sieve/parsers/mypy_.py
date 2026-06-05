@@ -5,7 +5,6 @@ import re
 from sieve.config import CompressConfig
 from sieve.core import DiagnosticItem, RawExecution, Severity, Status, StructuredOutput
 
-
 DIAG_RE = re.compile(
     r"^(?P<file>[^\s:][^:]*?):(?P<line>\d+)(?::(?P<col>\d+))?: "
     r"(?P<level>error|warning|note): (?P<msg>.*?)"

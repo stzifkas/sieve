@@ -7,8 +7,8 @@ from pathlib import Path
 
 from scripts.setup_codex_swe_bench_experiment import (
     HARNESS_CONTAINER,
-    ManifestRow,
     LOCAL_HOST_CLONE,
+    ManifestRow,
     _dependency_install_commands,
     _post_install_build_commands,
     build_child_pythonpath,

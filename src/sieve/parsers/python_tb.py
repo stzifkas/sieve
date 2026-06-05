@@ -7,7 +7,6 @@ from typing import Any
 from sieve.config import CompressConfig
 from sieve.core import RawExecution, RuntimeErrorItem, Status, StructuredOutput
 
-
 FRAME_RE = re.compile(r'^File "(.+?)", line (\d+)(?:, in (.+))?$')
 ERROR_RE = re.compile(
     r"^([A-Za-z_][\w.]*(?:Error|Exception|Exit|Interrupt|Group))(?::\s*(.*))?$"
@@ -92,7 +91,9 @@ class PythonTracebackParser:
         if last_header is not None:
             frames = self._extract_frames(lines, start=last_header + 1)
             primary = self._first_exception_after(lines, start=last_header + 1)
-            related = self._related_exceptions(lines, last_header + 1, primary_index=primary[2] if primary else None)
+            related = self._related_exceptions(
+                lines, last_header + 1, primary_index=primary[2] if primary else None
+            )
             if primary is not None:
                 return {
                     "error_type": primary[0],

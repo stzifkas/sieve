@@ -26,7 +26,7 @@ class ErrorSignature:
     message_hash: str
     first_seen_turn: int = 0
 
-    def matches(self, other: "ErrorSignature") -> bool:
+    def matches(self, other: ErrorSignature) -> bool:
         return (
             self.error_type == other.error_type
             and self.file == other.file

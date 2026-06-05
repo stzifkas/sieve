@@ -39,11 +39,25 @@ Repository = "https://github.com/stzifkas/sieve"
 Issues = "https://github.com/stzifkas/sieve/issues"
 
 [dependency-groups]
-dev = ["mcp>=1.0.0"]
+dev = ["mcp>=1.0.0", "ruff>=0.6"]
 swe-eval = ["swebench>=4.0", "datasets>=2.14"]
 
 [tool.uv]
 default-groups = ["dev"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+# (str, Enum) is kept deliberately over StrEnum: StrEnum changes str()/format()
+# semantics for the enum members, which would alter emitted output.
+ignore = ["UP042"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests embed long fixture/data literals and assertion strings inline.
+"tests/**" = ["E501"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sieve"]

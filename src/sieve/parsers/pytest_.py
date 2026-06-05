@@ -7,14 +7,15 @@ from typing import Any
 from sieve.config import CompressConfig
 from sieve.core import RawExecution, Status, StructuredOutput, TestResult
 
-
 DETAIL_HEADER_RE = re.compile(r"^_+\s+(.+?)\s+_+$")
 FILE_LINE_RE = re.compile(r"^(.+):(\d+)(?::(?:\s+(.*))?)?$")
 SECTION_RE = re.compile(r"^=+\s+(FAILURES|ERRORS)\s+=+$")
 SUMMARY_ENTRY_RE = re.compile(
     r"^(FAILED|ERROR|PASSED|SKIPPED|XFAIL(?:ED)?|XPASS(?:ED)?)\s+(.+?)(?:\s+-\s+(.*))?$"
 )
-COUNT_RE = re.compile(r"(\d+)\s+((?:x)?passed|(?:x)?failed|skipped|warnings?|errors?)", re.IGNORECASE)
+COUNT_RE = re.compile(
+    r"(\d+)\s+((?:x)?passed|(?:x)?failed|skipped|warnings?|errors?)", re.IGNORECASE
+)
 COLLECTED_RE = re.compile(r"collected\s+(\d+)\s+items?(?:\s*/\s*(\d+)\s+errors?)?", re.IGNORECASE)
 
 
@@ -101,7 +102,8 @@ class PytestParser:
 
     def _parse_counts(self, lines: list[str]) -> dict[str, int]:
         for line in reversed(lines):
-            if not any(token in line.lower() for token in ("passed", "failed", "error", "skipped", "xfailed", "xpassed", "warning")):
+            tokens = ("passed", "failed", "error", "skipped", "xfailed", "xpassed", "warning")
+            if not any(token in line.lower() for token in tokens):
                 continue
             counts = {}
             for value, label in COUNT_RE.findall(line):

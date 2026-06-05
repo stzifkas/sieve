@@ -5,7 +5,6 @@ import re
 from sieve.config import CompressConfig
 from sieve.core import DiagnosticItem, RawExecution, Severity, Status, StructuredOutput
 
-
 DIAG_RE = re.compile(
     r"^\s+(?P<line>\d+):(?P<col>\d+)\s+"
     r"(?P<level>error|warning)\s+"
@@ -87,4 +86,6 @@ class EslintParser:
         warnings = sum(1 for i in items if i.severity == Severity.WARNING)
         if not errors and not warnings:
             return "ESLINT: clean"
-        return f"ESLINT: {errors} error{'s' if errors != 1 else ''}, {warnings} warning{'s' if warnings != 1 else ''}"
+        err_s = "s" if errors != 1 else ""
+        warn_s = "s" if warnings != 1 else ""
+        return f"ESLINT: {errors} error{err_s}, {warnings} warning{warn_s}"

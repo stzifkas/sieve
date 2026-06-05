@@ -14,7 +14,6 @@ from sieve.parsers.pytest_ import PytestParser
 from sieve.parsers.python_tb import PythonTracebackParser
 from sieve.parsers.tsc import TscParser
 
-
 FIXTURES = Path(__file__).parent / "fixtures"
 
 

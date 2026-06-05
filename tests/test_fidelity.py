@@ -16,7 +16,6 @@ from pathlib import Path
 
 from sieve import CompressSession, OutputFormat
 
-
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
