@@ -1,5 +1,9 @@
 # Sieve
 
+[![CI](https://github.com/stzifkas/sieve/actions/workflows/ci.yml/badge.svg)](https://github.com/stzifkas/sieve/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
+
 Transparent feedback compression middleware for LLM coding agents. Sieve sits between an agent and its tools, parsing tool output and emitting a compact form before it enters the conversation context.
 
 83.9% of tokens in coding-agent trajectories are tool observations (JetBrains, NeurIPS 2025). Most of those are re-read on every subsequent turn. Sieve targets that bloat by parsing — not truncating — the output of common dev tools, then diffing against prior turns so the agent only sees what changed.
