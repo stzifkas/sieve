@@ -7,7 +7,7 @@ from functools import wraps
 from typing import Any
 
 from sieve.config import CompressConfig, OutputFormat
-from sieve.core import CompressedOutput, RawExecution, StructuredOutput
+from sieve.core import CompressedOutput, RawExecution, StructuredOutput, status_from_exit_code
 from sieve.delta import DeltaEngine
 from sieve.formatter import Formatter
 from sieve.router import ParserRouter
@@ -74,7 +74,7 @@ class CompressSession:
             raw_text = execution.combined_output
             parsed = StructuredOutput(
                 tool_type="generic",
-                status=self.router.fallback._infer_status(execution),
+                status=status_from_exit_code(execution.exit_code),
                 summary="Passthrough: parser failure",
                 raw_line_count=len(raw_text.splitlines()),
                 compressed_line_count=len(raw_text.splitlines()),

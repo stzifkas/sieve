@@ -19,6 +19,11 @@ class Severity(str, Enum):
     INFO = "info"
 
 
+def status_from_exit_code(exit_code: int) -> Status:
+    """Coarse run status from a process exit code (0 == success)."""
+    return Status.SUCCESS if exit_code == 0 else Status.FAILURE
+
+
 @dataclass(slots=True)
 class ErrorSignature:
     error_type: str
@@ -45,9 +50,16 @@ class RawExecution:
 
     @property
     def combined_output(self) -> str:
-        if self.stdout and self.stderr:
+        # Use stripped truthiness so whitespace-only stdout doesn't shadow
+        # real stderr content (e.g. a command that prints "\n" to stdout and
+        # the actual traceback to stderr).
+        out_has = bool(self.stdout.strip())
+        err_has = bool(self.stderr.strip())
+        if out_has and err_has:
             return f"{self.stdout.rstrip()}\n{self.stderr.lstrip()}".rstrip()
-        return (self.stdout or self.stderr).rstrip()
+        if err_has:
+            return self.stderr.rstrip()
+        return self.stdout.rstrip()
 
 
 @dataclass(slots=True)

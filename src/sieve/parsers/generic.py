@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter
 
 from sieve.config import CompressConfig
-from sieve.core import RawExecution, Status, StructuredOutput
+from sieve.core import RawExecution, Status, StructuredOutput, status_from_exit_code
 
 
 class GenericParser:
@@ -93,6 +93,4 @@ class GenericParser:
         return f"Output: {len(raw_lines)} lines -> {len(compressed_lines)} lines"
 
     def _infer_status(self, execution: RawExecution) -> Status:
-        if execution.exit_code == 0:
-            return Status.SUCCESS
-        return Status.FAILURE
+        return status_from_exit_code(execution.exit_code)
