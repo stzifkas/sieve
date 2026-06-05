@@ -3,15 +3,40 @@ requires = ["hatchling>=1.27.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sieve"
+name = "agent-sieve"
 version = "0.1.0"
 description = "Transparent feedback compression middleware for LLM coding agents."
 readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Sokratis Tzifkas" }]
 requires-python = ">=3.11"
 dependencies = []
+keywords = ["llm", "agent", "claude", "cursor", "compression", "context", "tooling"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 [project.optional-dependencies]
 mcp = ["mcp>=1.0.0"]
+
+[project.scripts]
+sieve = "sieve.cli:main"
+sieve-run = "sieve.cli.run:main"
+sieve-hook-claude = "sieve.hooks.claude_bash:main"
+sieve-hook-cursor = "sieve.hooks.cursor_shell:main"
+
+[project.urls]
+Homepage = "https://github.com/stzifkas/sieve"
+Repository = "https://github.com/stzifkas/sieve"
+Issues = "https://github.com/stzifkas/sieve/issues"
 
 [dependency-groups]
 dev = ["mcp>=1.0.0"]
@@ -22,3 +47,11 @@ default-groups = ["dev"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sieve"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/sieve",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]

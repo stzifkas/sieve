@@ -11,6 +11,36 @@ resolution-markers = [
 ]
 
 [[package]]
+name = "agent-sieve"
+version = "0.1.0"
+source = { editable = "." }
+
+[package.optional-dependencies]
+mcp = [
+    { name = "mcp" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "mcp" },
+]
+swe-eval = [
+    { name = "datasets" },
+    { name = "swebench" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.0.0" }]
+provides-extras = ["mcp"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "mcp", specifier = ">=1.0.0" }]
+swe-eval = [
+    { name = "datasets", specifier = ">=2.14" },
+    { name = "swebench", specifier = ">=4.0" },
+]
+
+[[package]]
 name = "aiohappyeyeballs"
 version = "2.6.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1935,36 +1965,6 @@ wheels = [
 ]
 
 [[package]]
-name = "sieve"
-version = "0.1.0"
-source = { editable = "." }
-
-[package.optional-dependencies]
-mcp = [
-    { name = "mcp" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "mcp" },
-]
-swe-eval = [
-    { name = "datasets" },
-    { name = "swebench" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.0.0" }]
-provides-extras = ["mcp"]
-
-[package.metadata.requires-dev]
-dev = [{ name = "mcp", specifier = ">=1.0.0" }]
-swe-eval = [
-    { name = "datasets", specifier = ">=2.14" },
-    { name = "swebench", specifier = ">=4.0" },
-]
-
-[[package]]
 name = "six"
 version = "1.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2170,8 +2170,8 @@ name = "uvicorn"
 version = "0.46.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "click" },
-    { name = "h11" },
+    { name = "click", marker = "sys_platform != 'emscripten'" },
+    { name = "h11", marker = "sys_platform != 'emscripten'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/1f/93/041fca8274050e40e6791f267d82e0e2e27dd165627bd640d3e0e378d877/uvicorn-0.46.0.tar.gz", hash = "sha256:fb9da0926999cc6cb22dc7cd71a94a632f078e6ae47ff683c5c420750fb7413d", size = 88758, upload-time = "2026-04-23T07:16:00.151Z" }
 wheels = [
