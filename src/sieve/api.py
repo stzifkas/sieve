@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from functools import wraps
-from typing import Any, Callable
+from typing import Any
 
 from sieve.config import CompressConfig, OutputFormat
 from sieve.core import CompressedOutput, RawExecution, StructuredOutput
@@ -88,6 +89,13 @@ class CompressSession:
                 compressed_chars=len(raw_text),
             )
             text = raw_text
+            # Keep session state consistent with the happy path, where
+            # delta.compress advances the turn and records the row's stats.
+            self.state.advance_turn()
+            self.state.record_compression(
+                raw_chars=len(raw_text),
+                compressed_chars=len(raw_text),
+            )
 
         return CompressionResult(
             text=text,
