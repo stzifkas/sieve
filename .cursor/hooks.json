@@ -3,7 +3,7 @@
   "hooks": {
     "preToolUse": [
       {
-        "command": "python3 .cursor/hooks/sieve_pre_shell.py",
+        "command": "sieve-hook-cursor",
         "matcher": "Shell"
       }
     ]

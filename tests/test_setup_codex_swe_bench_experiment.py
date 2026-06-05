@@ -100,7 +100,7 @@ class SetupCodexSweBenchExperimentTests(unittest.TestCase):
             text = readme.read_text(encoding="utf-8")
             self.assertIn("Baseline workspace", text)
             self.assertIn("Sieve workspace", text)
-            self.assertIn("scripts/sieved_run.py --no-sieve", text)
+            self.assertIn("sieve.cli.run --no-sieve", text)
 
     def test_wrapped_command_injects_workspace_and_deps_pythonpath(self) -> None:
         layouts = build_layouts(Path("/tmp/exp"))

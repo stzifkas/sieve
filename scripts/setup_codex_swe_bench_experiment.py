@@ -276,7 +276,8 @@ def build_wrapped_command(
     args = [
         "PYTHONPATH=" + os.pathsep.join([str(repo_root / "src"), str(repo_root)]),
         "python3",
-        str(repo_root / "scripts" / "sieved_run.py"),
+        "-m",
+        "sieve.cli.run",
     ]
     if layout.name == "baseline":
         args.append("--no-sieve")

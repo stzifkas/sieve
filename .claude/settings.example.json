@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/sieve_bash_rewrite.py"
+            "command": "sieve-hook-claude"
           }
         ]
       }

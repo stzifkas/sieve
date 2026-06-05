@@ -66,11 +66,12 @@ function cloneRepo(repo: string, dest: string, commit: string) {
 }
 
 async function injectSieveHook(workspace: string, sieveRepoRoot: string) {
-  const hookPy = path.join(sieveRepoRoot, ".cursor", "hooks", "sieve_pre_shell.py");
+  const sievePyPath = path.join(sieveRepoRoot, "src");
+  const hookCmd = `PYTHONPATH=${sievePyPath} SIEVE_RUN_BIN='python3 -m sieve.cli.run' python3 -m sieve.hooks.cursor_shell`;
   const hooksJson = {
     version: 1,
     hooks: {
-      preToolUse: [{ command: `python3 ${hookPy}`, matcher: "Shell" }],
+      preToolUse: [{ command: hookCmd, matcher: "Shell" }],
     },
   };
   await mkdir(path.join(workspace, ".cursor"), { recursive: true });
