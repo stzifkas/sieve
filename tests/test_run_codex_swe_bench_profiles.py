@@ -20,6 +20,13 @@ from scripts.run_codex_swe_bench_profiles import (
 from scripts.setup_codex_swe_bench_experiment import HARNESS_CONTAINER, LOCAL_HOST_CLONE, ManifestRow
 from scripts.setup_codex_swe_bench_experiment import build_layouts
 
+try:  # optional swe-eval dependency; only needed for dataset enrichment
+    import datasets  # noqa: F401
+
+    HAS_DATASETS = True
+except ImportError:
+    HAS_DATASETS = False
+
 
 class RunCodexSweBenchProfilesTests(unittest.TestCase):
     def test_build_codex_command_uses_json_and_workspace_write(self) -> None:
@@ -152,6 +159,7 @@ class RunCodexSweBenchProfilesTests(unittest.TestCase):
             )
         )
 
+    @unittest.skipUnless(HAS_DATASETS, "requires the optional 'datasets' dependency (swe-eval group)")
     def test_enrich_manifest_rows_fills_missing_harness_fields_once(self) -> None:
         rows = [
             ManifestRow(
