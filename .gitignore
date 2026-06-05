@@ -15,3 +15,4 @@ logs/
 # SWE-bench harness drops summary JSONs in cwd
 /cursor-*.json
 /codex-*.json
+/dist
