@@ -4,15 +4,19 @@ The proxy speaks MCP on stdio in both directions:
 
     agent ⇄  this proxy  ⇄  upstream MCP server
 
-`tools/list` is forwarded verbatim, so the agent sees the same tool surface as
-the upstream. `tools/call` is forwarded, then every TextContent block in the
+`tools/list` is forwarded so the agent sees the same tool definitions as the
+upstream (we return the upstream tool list unchanged; pagination cursors are
+not propagated). `tools/call` is forwarded, then every TextContent block in the
 result is run through a shared CompressSession before being returned. Other
 content types (images, embedded resources) pass through unchanged.
 
 A single CompressSession is held for the proxy's lifetime, so cross-tool delta
 compression works (e.g. running pytest twice in a row, or hitting the same
 runtime error from different tool invocations, both benefit from session
-state).
+state). Note the flip side: error-signature dedup is keyed on
+(error_type, file, message_hash) without a tool namespace, so two different
+upstream tools emitting an identically-shaped error will be deduped against
+each other. In practice the file+message hash makes this rare.
 
 Usage from a CLI:
 
