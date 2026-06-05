@@ -81,14 +81,14 @@ This repo requires verification commands to be run through Sieve so agent-facing
 Use:
 
 ```bash
-PYTHONPATH=src python3 scripts/sieved_run.py -- <command>
+PYTHONPATH=src python3 -m sieve.cli.run -- <command>
 ```
 
 Examples:
 
 ```bash
-PYTHONPATH=src python3 scripts/sieved_run.py -- python3 -m unittest discover -s tests -v
-PYTHONPATH=src python3 scripts/sieved_run.py -- python3 -m benchmarks.run
+PYTHONPATH=src python3 -m sieve.cli.run -- python3 -m unittest discover -s tests -v
+PYTHONPATH=src python3 -m sieve.cli.run -- python3 -m benchmarks.run
 ```
 
 Do not use baseline mode by default.
@@ -96,7 +96,7 @@ Do not use baseline mode by default.
 If your environment depends on `uv run`, this is also acceptable:
 
 ```bash
-uv run python scripts/sieved_run.py -- python -m unittest discover -s tests -v
+uv run python -m sieve.cli.run -- python -m unittest discover -s tests -v
 ```
 
 ### Minimum pre-PR verification
@@ -104,8 +104,8 @@ uv run python scripts/sieved_run.py -- python -m unittest discover -s tests -v
 Run these before opening a PR:
 
 ```bash
-PYTHONPATH=src python3 scripts/sieved_run.py -- python3 -m unittest discover -s tests -v
-PYTHONPATH=src python3 scripts/sieved_run.py -- python3 -m benchmarks.run
+PYTHONPATH=src python3 -m sieve.cli.run -- python3 -m unittest discover -s tests -v
+PYTHONPATH=src python3 -m sieve.cli.run -- python3 -m benchmarks.run
 ```
 
 If your change touches MCP integration, parser routing, or benchmark logic, run the most relevant additional checks and include them in your PR notes.

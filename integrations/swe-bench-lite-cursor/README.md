@@ -14,7 +14,7 @@ Important: the TypeScript Cursor SDK path here still runs the agent in a **local
 - `git`, Node 18+, `npm`
 - Machine where **`@cursor/sdk` local agents actually run** (Cursor CLI / local runtime — see [SDK docs](https://cursor.com/docs/api/sdk/typescript))
 - `CURSOR_API_KEY` ([dashboard](https://cursor.com/dashboard/cloud-agents))
-- `uv` on PATH (used by both profiles to route noisy shell commands through `scripts/sieved_run.py`)
+- `uv` on PATH (used by both profiles to route noisy shell commands through `sieve-run`)
 
 ```bash
 # Python deps for manifest export + harness
@@ -48,7 +48,7 @@ npx tsx src/run.ts \
 
 ## 2b. Sieve-assisted agent
 
-Injects `.cursor/hooks.json` into each clone so **`preToolUse` Shell** rewrites noisy commands through `scripts/sieved_run.py` in **this** repo (requires `python3` + `uv`).
+Injects `.cursor/hooks.json` into each clone so **`preToolUse` Shell** rewrites noisy commands through `sieve-run` in **this** repo (requires `python3` + `uv`).
 
 ```bash
 npx tsx src/run.ts \

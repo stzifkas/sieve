@@ -5,15 +5,17 @@
 When running tests, benchmarks, linters, builds, or similar verification commands in this repo, run them through Sieve so the agent sees compressed tool output:
 
 ```bash
-PYTHONPATH=src python3 scripts/sieved_run.py -- <command>
+PYTHONPATH=src python3 -m sieve.cli.run -- <command>
 ```
 
 Examples:
 
 ```bash
-PYTHONPATH=src python3 scripts/sieved_run.py -- python3 -m unittest discover -s tests -v
-PYTHONPATH=src python3 scripts/sieved_run.py -- python3 -m benchmarks.run
+PYTHONPATH=src python3 -m sieve.cli.run -- python3 -m unittest discover -s tests -v
+PYTHONPATH=src python3 -m sieve.cli.run -- python3 -m benchmarks.run
 ```
+
+Once installed (`pip install agent-sieve`), the equivalent is `sieve-run -- <command>`.
 
 Do not use baseline mode by default.
 

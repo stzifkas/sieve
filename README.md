@@ -68,6 +68,26 @@ uv sync --group swe-eval   # datasets
 uv run python -m benchmarks.ci_repair_bench --compare --json   # all 567 rows
 ```
 
+## Installation
+
+The library has no runtime dependencies:
+
+```bash
+pip install agent-sieve            # library + `sieve` / `sieve-run` CLIs
+pip install 'agent-sieve[mcp]'     # add the MCP proxy
+```
+
+After install, wire the hooks into your agent harness:
+
+```bash
+sieve config claude --write        # Claude Code PreToolUse (Bash) hook
+sieve config cursor --write        # Cursor preToolUse (Shell) hook
+sieve config claude --status       # check what's installed
+```
+
+Both `config` commands print a dry-run preview by default; add `--write` to apply
+(a `.sieve.bak` backup is made first) and `--uninstall` to remove.
+
 ## Quick start
 
 ```bash
@@ -153,7 +173,7 @@ session = CompressSession(CompressConfig(
 Install the optional dep:
 
 ```bash
-pip install 'sieve[mcp]'
+pip install 'agent-sieve[mcp]'
 ```
 
 Configure your MCP client (Claude Desktop, Cursor, Continue, etc.) to launch the proxy in place of the upstream. Example wrapping the official **`server-everything`** demo server (`npx` downloads it on first run):
