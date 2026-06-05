@@ -594,7 +594,6 @@ class CompressConfig:
 
     # Safety
     passthrough_on_error: bool = True    # If parser fails, return raw output
-    max_compression_ratio: float = 0.95  # Cap on the *reported* ratio
 
     # Telemetry
     track_stats: bool = True             # Collect compression statistics

@@ -18,7 +18,6 @@ class CompressConfig:
     max_raw_lines: int = 50
     include_pattern_hints: bool = True
     passthrough_on_error: bool = True
-    max_compression_ratio: float = 0.95
     track_stats: bool = True
     generic_head_lines: int = 20
     generic_tail_lines: int = 20

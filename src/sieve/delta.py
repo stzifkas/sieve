@@ -216,7 +216,6 @@ class DeltaEngine:
             ratio = 0.0
         else:
             ratio = 1 - compressed_chars / raw_chars
-        ratio = min(ratio, self.config.max_compression_ratio)
 
         return CompressedOutput(
             tool_type=parsed.tool_type,
