@@ -1,0 +1,36 @@
+name: Parser request
+description: Request (or volunteer to build) a parser for a tool whose output bloats agent context.
+labels: ["enhancement", "parser"]
+body:
+  - type: input
+    id: tool
+    attributes:
+      label: Tool
+      placeholder: "cargo test"
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: Representative output sample
+      description: >
+        A realistic failure output (the noisier the better — that's the case
+        that matters). This becomes a test fixture, so trim anything private.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: signal
+    attributes:
+      label: What the agent actually needs from it
+      description: >
+        Which lines carry signal? E.g. "test name, file:line, assertion
+        message — everything else is progress noise."
+    validations:
+      required: true
+  - type: checkboxes
+    id: volunteer
+    attributes:
+      label: Implementation
+      options:
+        - label: I'd like to implement this myself (see CONTRIBUTING.md → Adding or Updating Parsers)

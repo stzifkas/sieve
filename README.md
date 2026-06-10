@@ -8,7 +8,7 @@ Transparent feedback compression middleware for LLM coding agents. Sieve sits be
 
 83.9% of tokens in coding-agent trajectories are tool observations (JetBrains, NeurIPS 2025). Most of those are re-read on every subsequent turn. Sieve targets that bloat by parsing — not truncating — the output of common dev tools, then diffing against prior turns so the agent only sees what changed.
 
-Full design in [`docs/agent-compress-specs.md`](docs/agent-compress-specs.md).
+Full design in [`docs/agent-compress-specs.md`](docs/agent-compress-specs.md). Where this is headed: [ROADMAP.md](ROADMAP.md) — parser contributions are the easiest entry point ([good first issues](https://github.com/stzifkas/sieve/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)).
 
 ## What's in the box
 
