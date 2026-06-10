@@ -5,9 +5,10 @@ Everything on this roadmap serves one of three goals — make that promise
 trustworthy in real sessions, cover the tools real projects actually run, and
 back the claims with evidence.
 
-Issues tagged by milestone live in the
-[issue tracker](https://github.com/stzifkas/sieve/issues). Contributions
-welcome — parser issues in particular are designed to be self-contained.
+Live progress is tracked in the pinned
+[roadmap tracking issue (#18)](https://github.com/stzifkas/sieve/issues/18),
+with every work item attached as a sub-issue. Contributions welcome — parser
+issues in particular are designed to be self-contained.
 
 ## v0.2 — Trustworthy in real sessions
 
