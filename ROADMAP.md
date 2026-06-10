@@ -65,10 +65,60 @@ resolve-rate cost" in anything louder than a README caveat:
 - Expand fixture coverage for the thin categories (mypy N=2, eslint N=1).
 - Publish reproducible results with manifests and harness versions pinned.
 
+## v0.5+ — Horizons
+
+Scope expansion, deliberately sequenced after the trust and coverage work:
+these change what Sieve *is* — from "output shrinker" to the deterministic
+context layer between agents and their tools. Sieve's defensible asset is not
+compression; it's deterministic parsing into structured items, a session-level
+memory of what the model has already seen, and cross-turn deltas. Everything
+here deepens those primitives, widens distribution, or builds retention.
+
+**New DX primitives**
+
+- **Zoomable tool output.** Every compressed item gets a stable inline ID;
+  `sieve expand <id>` (CLI or MCP tool) returns the full raw block for just
+  that item. Tool output becomes a progressive-disclosure tree, and the
+  biggest objection to lossy compression becomes the signature feature.
+- **File-read dedup.** Re-read files are among the largest observation-token
+  sinks, and the primitive (`SessionState.read_files`) already exists unused
+  in the codebase: answer repeat reads with "unchanged since turn N" or a
+  diff against what the model last saw.
+- **Budget-aware adaptive verbosity.** Verbosity as a policy function of
+  repeat count and remaining context budget. This is also the positioning
+  move against harness-native compaction: deterministic, inspectable,
+  unit-testable degradation — nothing paraphrased by a model.
+
+**Distribution wedges**
+
+- **`sieve-action`.** A GitHub Action posting compressed CI-failure summaries
+  as PR comments — valuable to humans and CI-repair agents alike, and every
+  comment is an advertisement with a built-in proof point.
+- **Framework adapters.** Idiomatic glue for the Claude Agent SDK, OpenAI
+  Agents SDK, LangGraph, OpenHands, and Aider: one adapter ships Sieve to
+  every app built on that framework.
+- **Harness breadth.** Gemini CLI, Codex CLI, Copilot CLI, Zed — each hook
+  adapter is small and widens the "works with your stack" claim.
+
+**Enterprise & delight**
+
+- **Secret/PII redaction.** Sieve already sits at the choke point between
+  tools and the model; a deterministic scrubbing pass turns "compression
+  middleware" into "context hygiene middleware" — the first thing an
+  enterprise security review asks about.
+- **Flaky-test detection.** The delta engine already sees pass/fail flips
+  across turns; surfacing "likely flaky, don't chase it" prevents the most
+  expensive agent failure mode (debugging nondeterminism for 20 turns).
+- **Next-wave parsers.** Where agents are going, not just where they are:
+  terraform plan, kubectl, Playwright/Cypress, docker build, Gradle/Maven —
+  plus streaming compression for long-running builds as the prerequisite.
+
 ## Ongoing
 
 - Release automation (PyPI trusted publishing on tag).
 - A demo recording and an `examples/` directory.
+- Savings telemetry worth showing a manager (weekly rollups, OTel export) as
+  `sieve stats` matures.
 - Keep the core dependency-free and the never-larger-than-raw invariant
   intact — both are load-bearing features, not accidents.
 
