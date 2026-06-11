@@ -43,7 +43,7 @@ Issues = "https://github.com/stzifkas/sieve/issues"
 # repeated here because `uv sync` does not install extras by default, and the
 # MCP proxy tests need it present in the default dev environment. Keep the
 # version specifier in sync with the extra above.
-dev = ["mcp>=1.0.0", "ruff>=0.6"]
+dev = ["mcp>=1.0.0", "ruff>=0.6", "mypy"]
 swe-eval = ["swebench>=4.0", "datasets>=2.14"]
 
 [tool.uv]
@@ -73,3 +73,6 @@ include = [
     "LICENSE",
     "pyproject.toml",
 ]
+
+[tool.mypy]
+disallow_untyped_defs = true
