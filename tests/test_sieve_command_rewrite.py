@@ -21,8 +21,39 @@ class RewriteTests(unittest.TestCase):
         self.assertEqual(again, wrapped)
 
     def test_respects_raw_hint(self) -> None:
-        cmd = "pytest tests/ --raw output please"
+        for cmd in (
+            "pytest tests/ --raw output please",
+            "pytest tests/ # sieve:raw",
+            "pytest tests/ #sieve:raw",
+        ):
+            with self.subTest(cmd=cmd):
+                self.assertEqual(rewrite_shell_command(cmd), cmd)
+
+    def test_raw_hint_falls_back_to_whitespace_split(self) -> None:
+        cmd = "pytest tests/ --raw 'unterminated"
         self.assertEqual(rewrite_shell_command(cmd), cmd)
+
+    def test_raw_hint_requires_exact_raw_flag(self) -> None:
+        for cmd in (
+            "pytest --raw-data tests/",
+            "pytest tests/test_raw.py --rawX",
+        ):
+            with self.subTest(cmd=cmd):
+                out = rewrite_shell_command(cmd)
+                self.assertIn("sieve-run", out)
+                self.assertTrue(out.endswith(cmd))
+
+    def test_text_raw_hints_require_whole_arguments(self) -> None:
+        for cmd in (
+            "pytest tests/verbatim_case.py",
+            "pytest 'tests/full logs/test_example.py'",
+            "pytest -k verbatim",
+            "pytest -k 'full log'",
+        ):
+            with self.subTest(cmd=cmd):
+                out = rewrite_shell_command(cmd)
+                self.assertIn("sieve-run", out)
+                self.assertTrue(out.endswith(cmd))
 
     def test_preserves_env_assignments(self) -> None:
         cmd = "DJANGO_SETTINGS_MODULE=tests.settings pytest tests/"
