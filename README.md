@@ -91,6 +91,9 @@ sieve config claude --status       # check what's installed
 
 Both `config` commands print a dry-run preview by default; add `--write` to apply
 (a `.sieve.bak` backup is made first) and `--uninstall` to remove.
+For a single hooked command that should stay uncompressed, append `# sieve:raw`
+or pass an exact `--raw` token; lookalike flags such as `--raw-data` are still
+rewritten normally.
 
 ## Quick start
 

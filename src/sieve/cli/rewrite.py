@@ -29,12 +29,8 @@ NOISY_PREFIXES: tuple[str, ...] = (
     "python -m pip install",
 )
 
-RAW_HINTS: tuple[str, ...] = (
-    "--raw",
-    " verbatim",
-    "full log",
-    "full logs",
-)
+RAW_TOKEN_HINTS: tuple[str, ...] = ("--raw",)
+RAW_COMMENT_HINT = "sieve:raw"
 
 DEFAULT_RUN_BIN = "sieve-run"
 
@@ -82,8 +78,19 @@ def already_wrapped(command: str) -> bool:
 
 
 def _blocked_by_raw_hint(command: str) -> bool:
-    lower = command.lower()
-    return any(h in lower for h in RAW_HINTS)
+    try:
+        tokens = [token.lower() for token in shlex.split(command)]
+    except ValueError:
+        tokens = command.lower().split()
+
+    for index, token in enumerate(tokens):
+        if token in RAW_TOKEN_HINTS:
+            return True
+        if token == "#" and tokens[index + 1 : index + 2] == [RAW_COMMENT_HINT]:
+            return True
+        if token == "#" + RAW_COMMENT_HINT:
+            return True
+    return False
 
 
 def _rest_is_noisy(rest: str) -> bool:
